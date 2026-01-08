@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Hallucination UI – Dark Mode</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: #e5e7eb;
+}
+
+.main {
+  display: flex;
+  height: 100vh;
+  transition: filter 0.3s ease;
+}
+
+.blur {
+  filter: blur(6px);
+}
+.chatgpt {
+  width: 75%;
+  padding: 30px;
+  background: linear-gradient(180deg, #020617, #020617);
+}
+
+.chat-box {
+  margin-top: 20px;
+  background: #020617;
+  border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 16px;
+  padding: 20px;
+}
+.ui {
+  width: 25%;
+  padding: 30px;
+  background: linear-gradient(180deg, #0b1220, #020617);
+  border-left: 1px solid rgba(148,163,184,0.2);
+}
+
+.ui h2 {
+  margin-bottom: 25px;
+  color: #c7d2fe;
+}
+button {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 14px;
+  font-size: 15px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.acc-btn {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #052e16;
+}
+
+.patch-btn {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #082f49;
+}
+
+.search {
+  margin-top: 10px;
+}
+
+.search input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148,163,184,0.3);
+  background: #020617;
+  color: #e5e7eb;
+}
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.65);
+  backdrop-filter: blur(10px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 560px;
+  padding: 30px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #0b1220, #020617);
+  border: 1px solid rgba(148,163,184,0.2);
+  box-shadow: 0 0 60px rgba(56,189,248,0.25);
+  text-align: center;
+}
+
+.modal-content h3 {
+  margin-bottom: 18px;
+  color: #c7d2fe;
+}
+.chart {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #22c55e 0% 40%,
+    #facc15 40% 70%,
+    #ef4444 70% 100%
+  );
+}
+.claim {
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.correct { background: rgba(34,197,94,0.15); color: #86efac; }
+.extra   { background: rgba(250,204,21,0.15); color: #fde68a; }
+.wrong   { background: rgba(239,68,68,0.15); color: #fca5a5; }
+.patch {
+  padding: 20px;
+  border-radius: 16px;
+  background: #020617;
+  border: 1px solid rgba(148,163,184,0.25);
+  color: #e5e7eb;
+  line-height: 1.6;
+}
+.close {
+  margin-top: 20px;
+  padding: 12px;
+  width: 100%;
+  background: linear-gradient(135deg, #9333ea, #7c3aed);
+  color: #f5f3ff;
+  border-radius: 12px;
+  border: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="main" id="screen">
+  <div class="chatgpt">
+    <h2>ChatGPT</h2>
+    <div class="chat-box">
+      <p><b>User:</b> Explain JK Flip-Flop</p>
+      <p><b>AI:</b> JK Flip-Flop is a sequential circuit whose output toggles when both J and K are high. It is used in counters and registers.</p>
+    </div>
+  </div>
+
+  <div class="ui">
+    <h2>Answer Analysis</h2>
+
+    <button class="acc-btn" onclick="openModal('accuracy')">Accuracy Rate</button>
+    <button class="patch-btn" onclick="openModal('patch')">Patch</button>
+
+    <div class="search">
+      <input type="text" placeholder="Search claims or concepts..." />
+    </div>
+  </div>
+</div>
+<div class="modal" id="accuracy">
+  <div class="modal-content">
+    <h3>Accuracy Breakdown</h3>
+
+    <div class="chart"></div>
+
+    <div class="claim correct">Claim 1: JK Flip-Flop is a sequential circuit</div>
+    <div class="claim correct">Claim 2: Output toggles when J = K = 1</div>
+    <div class="claim extra">Claim 3: Used in counters</div>
+    <div class="claim wrong">Claim 4: It is a combinational circuit</div>
+
+    <button class="close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+<div class="modal" id="patch">
+  <div class="modal-content">
+    <h3>Most Reliable Answer</h3>
+
+    <div class="patch">
+      JK Flip-Flop is a sequential circuit whose output toggles when both J and K inputs are high.
+    </div>
+
+    <p style="margin-top:12px;color:#86efac;">Accuracy: 40%</p>
+
+    <button class="close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+function openModal(id) {
+  document.getElementById("screen").classList.add("blur");
+  document.getElementById(id).style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("screen").classList.remove("blur");
+  document.querySelectorAll(".modal").forEach(m => m.style.display = "none");
+}
+</script>
+
+</body>
+</html>
